@@ -26,7 +26,7 @@ wss.on('connection', function connection(ws) {
     ws.send('Welcome to my server');
   }
 
-  db.run(`INSERT INTO visitors (count time)
+  db.run(`INSERT INTO visitors (count, time)
     ValUES (${numClients} datetime('now'))
   `);
 
