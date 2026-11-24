@@ -11,6 +11,12 @@ server.listen(3000, function() {
   console.log('Server is running on http://localhost:3000');
 });
 
+process.on('SIGINT', () => {
+  server.close(() => {
+    shutdownDB();
+  })
+});
+
 // Begin websocket
 const WebSocketServer = require('ws').Server;
 
@@ -39,4 +45,29 @@ wss.broadcast = function broadcast(data) {
   wss.clients.forEach(function (client) {
     client.send(data);
   });
+}
+
+// begin database
+const sqlite = require('sqlite3');
+const db = new sqlite.Database(':memory:');
+
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE visitors (
+      count INTEGER,
+      time TEXT
+    )  
+  `);
+});
+
+function getCounts() {
+  db.each('SELECT * FRONM visitors', (err, row) => {
+    console.log(row);
+  })
+}
+
+function shutdownDB() {
+  getCounts();
+  console.log('Shutting down db');
+  db.close();
 }
