@@ -12,6 +12,11 @@ server.listen(3000, function() {
 });
 
 process.on('SIGINT', () => {
+  
+  wss.clients.forEach((client) => {
+    client.close();
+  });
+
   server.close(() => {
     shutdownDB();
   })
@@ -61,7 +66,7 @@ db.serialize(() => {
 });
 
 function getCounts() {
-  db.each('SELECT * FRONM visitors', (err, row) => {
+  db.each('SELECT * FROM visitors', (err, row) => {
     console.log(row);
   })
 }
